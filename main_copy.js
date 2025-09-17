@@ -41,7 +41,7 @@ fmtbtn.addEventListener("click", () => {
   try {
     let obj = JSON.parse(ipjson.value);
 
-    const finalAns = formatJson(ans, obj, spaceCnt + 2);
+    const finalAns = formatJson(ans, obj, spaceCnt);
 
     opjson.value = finalAns;
   } catch (error) {
@@ -54,34 +54,39 @@ fmtbtn.addEventListener("click", () => {
 // - object vale ke liye ek function bna do
 
 const arrayLogic = (parentObj, obj, spaceCnt) => {
-  obj.forEach((value, i) => {
+  obj.forEach(([key, value], i) => {
     for (let i = 0; i < spaceCnt; i++) {
       parentObj = parentObj + " ";
     }
 
     if (value !== Object(value)) {
-      if (typeof value == "boolean" || typeof value == "number") {
-        parentObj = parentObj + `${value}`;
+      if (typeof value == "boolean") {
+        parentObj = parentObj + `"${key}":${value}`;
+      } else if (typeof value == "number") {
+        parentObj = parentObj + `"${key}":${value}`;
+      } else if (typeof value == "string") {
+        parentObj = parentObj + `"${key}":"${value}"`;
       } else {
-        parentObj = parentObj + `"${value}"`;
+        parentObj = parentObj + `"${key}":"${value}"`;
       }
     } else if (value instanceof Array) {
       parentObj = parentObj + `"${key}": [\n`;
 
       value.forEach((el, index) => {
-        for (let i = 0; i < spaceCnt; i++) {
+        for (let i = 0; i < spaceCnt + 2; i++) {
           parentObj = parentObj + " ";
         }
 
         if (el !== Object(el)) {
           if (typeof el == "boolean" || typeof el == "number") {
             parentObj = parentObj + `${el}`;
+          } else if (typeof el == "string") {
+            parentObj = parentObj + `"${el}"`;
           } else {
             parentObj = parentObj + `"${el}"`;
           }
         } else if (el instanceof Array || el instanceof Object) {
-          const recValue = formatJson("", el, spaceCnt + 2);
-          console.log("recValue: ", recValue);
+          const recValue = formatJson("", el, spaceCnt);
           parentObj = parentObj + recValue;
         }
 
@@ -97,10 +102,9 @@ const arrayLogic = (parentObj, obj, spaceCnt) => {
 
       parentObj = parentObj + `]`;
     } else if (value instanceof Object) {
-      const newJSON = formatJson("", value, spaceCnt + 2);
-      // const newJSON = formatJson(parentObj, value, spaceCnt + 2);
+      const newJSON = formatJson(parentObj, value, spaceCnt + 2);
 
-      parentObj = parentObj + `${newJSON}`;
+      parentObj = parentObj + `"${key}": ${newJSON}`;
     }
 
     parentObj =
@@ -115,7 +119,7 @@ const arrayLogic = (parentObj, obj, spaceCnt) => {
 
 const objectLogic = (parentObj, obj, spaceCnt) => {
   Object.entries(obj).forEach(([key, value], i) => {
-    for (let j = 0; j < spaceCnt - 2; j++) {
+    for (let i = 0; i < spaceCnt; i++) {
       parentObj = parentObj + " ";
     }
 
@@ -131,7 +135,7 @@ const objectLogic = (parentObj, obj, spaceCnt) => {
       parentObj = parentObj + `"${key}": [\n`;
 
       value.forEach((el, index) => {
-        for (let j = 0; j < spaceCnt; j++) {
+        for (let i = 0; i < spaceCnt + 2; i++) {
           parentObj = parentObj + " ";
         }
 
@@ -143,8 +147,6 @@ const objectLogic = (parentObj, obj, spaceCnt) => {
           }
         } else if (el instanceof Array || el instanceof Object) {
           const recValue = formatJson("", el, spaceCnt);
-          console.log("el: ", el);
-          console.log("recValue: ", recValue);
           parentObj = parentObj + recValue;
         }
 
@@ -154,16 +156,13 @@ const objectLogic = (parentObj, obj, spaceCnt) => {
         parentObj = parentObj + `\n`;
       });
 
-      for (let j = 0; j < spaceCnt - 2; j++) {
+      for (let j = 0; j < spaceCnt; j++) {
         parentObj = parentObj + " ";
       }
 
       parentObj = parentObj + `]`;
     } else if (value instanceof Object) {
-      console.log("spaceCnt before :", spaceCnt);
-      const newJSON = formatJson("", value, spaceCnt + 2);
-      console.log("spaceCnt after :", spaceCnt);
-      console.log("------");
+      const newJSON = formatJson(parentObj, value, spaceCnt + 2);
 
       parentObj = parentObj + `"${key}": ${newJSON}`;
     }
@@ -174,7 +173,7 @@ const objectLogic = (parentObj, obj, spaceCnt) => {
         : parentObj + "\n";
   });
 
-  for (let i = 0; i < spaceCnt - 4; i++) {
+  for (let i = 0; i < spaceCnt; i++) {
     parentObj = parentObj + " ";
   }
   parentObj = parentObj + "}";
