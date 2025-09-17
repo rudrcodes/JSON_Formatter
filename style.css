@@ -1,0 +1,30 @@
+.flex {
+    display: flex;
+    align-items: center;
+    gap:'10px'
+
+}
+
+.parent {
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+
+}
+
+.col {
+    flex-direction: column;
+
+}
+
+.rowl {
+    flex-direction: row;
+
+}
+
+.child {
+    gap: 2;
+    width:80vw;
+    justify-content: space-around;
+
+}
